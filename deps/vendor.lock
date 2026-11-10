@@ -1,0 +1,15 @@
+# Third-party Odoo modules, pinned to exact commits on their 19.0 branches.
+# Update through a PR; CI installs everything before it can merge.
+# Format: <name> <git-url> <full-commit-sha> <comma-separated-modules>
+account-financial-reporting https://github.com/OCA/account-financial-reporting.git f48b4ea777c444256aa1c215ec3117d604b5feff account_financial_report,account_tax_balance
+account-financial-tools https://github.com/OCA/account-financial-tools.git c2722f79d94b3bcd8bfec334b76f24ace7d215aa account_asset_management,account_fiscal_year,account_lock_date_update
+account-reconcile https://github.com/OCA/account-reconcile.git e3d99f3dc4a61f44167ce0ce70e9a0a6ad0b7540 account_reconcile_oca,account_statement_base
+bank-statement-import https://github.com/OCA/bank-statement-import.git aa647ee5ea71187b81d3f52241b9f948908e6dd2 account_statement_import_base,account_statement_import_file
+contract https://github.com/OCA/contract.git 0750f9aa1e6d4bf100972c2d1f1d05e9bea3500b contract
+dms https://github.com/OCA/dms.git 7b510bd98bbe98196d18c9a61312d1cbe529a393 dms
+mis-builder https://github.com/OCA/mis-builder.git 7d519f31e1a553d7a5499571a9146f7e3ea49ea4 mis_builder
+muk https://github.com/muk-it/odoo-modules.git 929cd6906be2599bb6c90f3495912c85910863c0 muk_web_appsbar,muk_web_chatter,muk_web_colors,muk_web_dialog,muk_web_group,muk_web_refresh,muk_web_theme
+payroll https://github.com/OCA/payroll.git 2eca6caafc74d4a592ee0ca75606b4c6e3ce75b9 payroll
+reporting-engine https://github.com/OCA/reporting-engine.git 2e3240211960f34bf6e07c1f0e849aaf249a6dfc report_xlsx,report_xlsx_helper
+server-ux https://github.com/OCA/server-ux.git b1d139bba74ed20639f6bb4d39de7320251ec6fc date_range
+web https://github.com/OCA/web.git 80f85e9bc62858b36f1c18471afba48960305a72 web_responsive

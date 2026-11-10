@@ -1,0 +1,54 @@
+# Base stack shared by every environment.
+# Add compose.local.yaml on a laptop or compose.server.yaml on the server.
+services:
+  db:
+    image: postgres:16-bookworm@sha256:5264710be20f409750ac6dc4e5706dcef929c87e241605463f0f9aefa932a8d9
+    restart: unless-stopped
+    command: ["postgres", "-c", "shared_buffers=${PG_SHARED_BUFFERS:-256MB}"]
+    environment:
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_DB: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    mem_limit: ${DB_MEM_LIMIT:-1g}
+
+  odoo:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: jc-odoo:${ENV_NAME:-local}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      HOST: db
+      USER: odoo
+      PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      ODOO_DB: ${ODOO_DB:?set ODOO_DB}
+      ADMIN_PASSWD: ${ADMIN_PASSWD:?set ADMIN_PASSWD}
+      ODOO_PROXY_MODE: ${ODOO_PROXY_MODE:-False}
+      ODOO_WORKERS: ${ODOO_WORKERS:-0}
+      ODOO_CRON_THREADS: ${ODOO_CRON_THREADS:-1}
+      ODOO_LIMIT_MEMORY_SOFT: ${ODOO_LIMIT_MEMORY_SOFT:-1288490188}
+      ODOO_LIMIT_MEMORY_HARD: ${ODOO_LIMIT_MEMORY_HARD:-1610612736}
+      ODOO_LOG_LEVEL: ${ODOO_LOG_LEVEL:-info}
+    volumes:
+      - odoo-data:/var/lib/odoo
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8069/web/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    mem_limit: ${ODOO_MEM_LIMIT:-2g}
+
+volumes:
+  db-data:
+  odoo-data:

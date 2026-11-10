@@ -1,0 +1,28 @@
+# Modules installed and kept updated on every deployment, one per line.
+# Dependencies install automatically. Lines starting with # are ignored.
+
+# Chile
+l10n_cl
+
+# Core business flows for the demo
+sale_management
+purchase
+stock
+
+# User interface
+web_responsive
+
+# Finance
+account_financial_report
+account_tax_balance
+account_reconcile_oca
+account_statement_import_file
+account_asset_management
+account_fiscal_year
+account_lock_date_update
+mis_builder
+
+# Contracts, documents, payroll
+contract
+dms
+payroll

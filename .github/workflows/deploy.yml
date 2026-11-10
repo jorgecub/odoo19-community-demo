@@ -1,0 +1,40 @@
+name: Deploy
+
+# Merge to main: staging. Push a v* tag on a commit from main: production.
+# This never runs on pull_request, so code in a PR cannot reach these secrets.
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    # Off until the server exists: set the repository variable DEPLOY_ENABLED to true.
+    if: vars.DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    environment: ${{ github.ref_type == 'tag' && 'production' || 'staging' }}
+    concurrency:
+      group: deploy-${{ github.ref_type == 'tag' && 'production' || 'staging' }}
+      cancel-in-progress: false
+    env:
+      TARGET: ${{ github.ref_type == 'tag' && 'production' || 'staging' }}
+    steps:
+      - name: Configure SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+      - name: Deploy
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes -o ServerAliveInterval=30 \
+            "deploy@$DEPLOY_HOST" "deploy $TARGET $GITHUB_SHA"

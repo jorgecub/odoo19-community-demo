@@ -1,0 +1,5 @@
+# Laptop and CI: reachable only from this machine.
+services:
+  odoo:
+    ports:
+      - "127.0.0.1:${ODOO_PORT:-8069}:8069"
