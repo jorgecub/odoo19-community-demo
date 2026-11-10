@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Repo checks
+        run: python3 -I scripts/check_repo.py
+      - name: Shell syntax and lint
+        run: |
+          scripts=$(git ls-files '*.sh')
+          for f in $scripts; do bash -n "$f"; done
+          shellcheck -S warning $scripts
+      - name: Compose files are valid
+        env:
+          POSTGRES_PASSWORD: x
+          ADMIN_PASSWD: x
+          ODOO_DB: x
+          ENV_NAME: x
+          PROD_DOMAIN: prod.example.test
+          STAGING_DOMAIN: staging.example.test
+        run: |
+          docker compose -f compose.yaml -f compose.local.yaml config -q
+          docker compose -f compose.yaml -f compose.server.yaml config -q
+          docker compose -f deploy/caddy/compose.yaml config -q
+
+  install-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    needs: checks
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install every module on an empty database
+        run: bash scripts/install-test.sh

@@ -1,0 +1,28 @@
+# HTTPS entry point for both environments. Certificates renew automatically.
+services:
+  caddy:
+    image: caddy:2-alpine@sha256:78bd35025c7ba85961dd149ae670315129954e77abe2383ac47c89106b35ade9
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      PROD_DOMAIN: ${PROD_DOMAIN:?set PROD_DOMAIN}
+      STAGING_DOMAIN: ${STAGING_DOMAIN:?set STAGING_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - edge
+    mem_limit: 256m
+
+volumes:
+  caddy-data:
+  caddy-config:
+
+networks:
+  edge:
+    external: true
+    name: odoo-edge

@@ -1,0 +1,24 @@
+(odoo_common) {
+	encode gzip
+
+	# The database manager is off in Odoo too (list_db = False); block it here as well.
+	@dbmanager path /web/database/*
+	respond @dbmanager 404
+}
+
+{$PROD_DOMAIN} {
+	import odoo_common
+
+	@ws path /websocket*
+	reverse_proxy @ws odoo-production:8072
+	reverse_proxy odoo-production:8069
+}
+
+{$STAGING_DOMAIN} {
+	import odoo_common
+	header X-Robots-Tag "noindex, nofollow"
+
+	@ws path /websocket*
+	reverse_proxy @ws odoo-staging:8072
+	reverse_proxy odoo-staging:8069
+}

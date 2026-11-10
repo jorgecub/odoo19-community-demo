@@ -1,0 +1,13 @@
+# Server: no published ports. Only the Caddy proxy can reach Odoo, over a shared network.
+services:
+  odoo:
+    networks:
+      default:
+      edge:
+        aliases:
+          - odoo-${ENV_NAME:?set ENV_NAME}
+
+networks:
+  edge:
+    external: true
+    name: odoo-edge

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Set once on install; later changes made in the UI are kept on update. -->
+<odoo noupdate="1">
+    <record id="base.main_company" model="res.company">
+        <field name="country_id" ref="base.cl"/>
+    </record>
+</odoo>
