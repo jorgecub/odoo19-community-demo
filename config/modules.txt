@@ -1,7 +1,8 @@
 # Modules installed and kept updated on every deployment, one per line.
 # Dependencies install automatically. Lines starting with # are ignored.
 
-# Chile
+# Chile. jc_cl_company sets the company country first, so l10n_cl loads its chart.
+jc_cl_company
 l10n_cl
 
 # Core business flows for the demo
